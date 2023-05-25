@@ -15,6 +15,7 @@ class Discord:
     AUTHORIZE_URL = os.getenv("AUTHORIZE_URL")
 
     DISCORD_USER_DETAILS_URL = "https://discord.com/api/v10/users/@me"
+    AVATAR_URL_FORMAT = "https://cdn.discordapp.com/avatars/{user_id}/{avatar}?size=1024"
 
 
 class Auth:

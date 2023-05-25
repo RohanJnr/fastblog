@@ -5,6 +5,7 @@ import aiohttp
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from fastapi.requests import Request
 from starlette.middleware import Middleware
@@ -19,7 +20,21 @@ load_dotenv()
 
 SIZE_POOL_AIOHTTP = 100
 
-installed_middleware = [Middleware(BaseHTTPMiddleware, dispatch=jwt_auth)]
+
+origins = [
+    "http://localhost:3000"
+]
+
+installed_middleware = [
+    Middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        allow_credentials=True,
+    ),
+    Middleware(BaseHTTPMiddleware, dispatch=jwt_auth)
+]
 
 app = FastAPI(
     middleware=installed_middleware

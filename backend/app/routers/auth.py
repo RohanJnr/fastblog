@@ -22,6 +22,16 @@ async def testing(response: Response):
     response.set_cookie(key="token", value="fake-cookie-session-value")
     return {"message": "Come to the dark side, we have cookies"}
 
+@router.get("/discord/logout")
+async def logout() -> RedirectResponse:
+    redirect = RedirectResponse("http://localhost:3000")
+    redirect.delete_cookie(
+        key="token",
+        httponly=True,
+    )
+
+    return redirect 
+
 @router.get("/discord/authorize")
 async def authorize() -> RedirectResponse:
     return RedirectResponse(Discord.AUTHORIZE_URL)
@@ -52,7 +62,11 @@ async def discord_redirect(code: str):
         user.raise_for_status()
         
         user_data = user.json()
+        print(user_data)
         user_id = user_data["id"]
+        username = user_data["username"]
+        avatar = user_data["avatar"]
+        discriminator = user_data["discriminator"]
         
         user = await User.get_or_none(user_id=user_id)
         key_salt = secrets.token_urlsafe(16)
@@ -60,11 +74,17 @@ async def discord_redirect(code: str):
         
         if user:
             user.key_salt = key_salt
+            user.username = username
+            user.avatar = avatar
+            user.discriminator = discriminator
             await user.save()
         else:
             # New user, persist to DB.
             user = User(
                 user_id=user_id,
+                username=username,
+                avatar=avatar,
+                discriminator=discriminator,
                 key_salt=key_salt
             )
             await user.save()
@@ -85,9 +105,8 @@ async def discord_redirect(code: str):
     redirect.set_cookie(
         key="token",
         value=token,
-        expires=expires_at,
         httponly=True,
-        
+        max_age=30 * 24 * 60 * 60 * 1000,  # 30 days
     )
 
     return redirect

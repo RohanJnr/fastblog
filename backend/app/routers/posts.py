@@ -17,17 +17,21 @@ async def something():
 
 @router.get("/")
 async def get_posts():
-    p = await Post.first()
     return await PostPydantic.from_queryset(Post.all())
+
+@router.get("/me")
+async def get_posts(request: Request):
+    user_id = request.state.user_id
+    return await PostPydantic.from_queryset(Post.filter(user__user_id=user_id))
 
 @router.get("/{post_id}", response_model=PostPydantic)
 async def get_post(post_id: int) -> PostPydantic:
     return await PostPydantic.from_queryset_single(Post.get(id=post_id))
 
 @router.post("/", response_model=PostPydantic, responses={404: {"model": HTTPNotFoundError}})
-async def create_post(user: PostPydanticInput):
-    user_obj = await Post.create(**user.dict(exclude_unset=True))
-    return await PostPydantic.from_tortoise_orm(user_obj)
+async def create_post(post: PostPydanticInput):
+    post_obj = await Post.create(**post.dict(exclude_unset=True))
+    return await PostPydantic.from_tortoise_orm(post_obj)
 
 
 @router.put(

@@ -2,6 +2,7 @@ import typing as t
 from datetime import datetime, timezone
 
 from fastapi import HTTPException, Request, Response
+from fastapi.responses import JSONResponse
 from jose import jwt, JWTError
 
 from app.constants import Auth
@@ -17,16 +18,19 @@ async def jwt_auth(
     """
     print(request.url.path)
     if (
-        request.url.path in ["/api/auth/discord/authorize", "/api/auth/discord/redirect"]
+        request.url.path in ["/api/auth/discord/authorize", "/api/auth/discord/redirect", "/api/auth/discord/logout"]
         or request.url.path.startswith("/static/")
     ):
         # Short circuit the authorization route
         return await call_next(request)
     try:
         # Populate the user data in the request
-        cookies = request.cookies
-        print(cookies)
-        token = cookies.get("token", None)
+        auth_header = request.headers.get("Authorization")
+        print(auth_header)
+        if auth_header is not None:
+            _, token = auth_header.split(" ")
+        else:
+            token = request.cookies.get("token")
 
         print(f"GOT TOKEN: {token}")
 
@@ -58,6 +62,6 @@ async def jwt_auth(
 
     except HTTPException as e:
         # Convert HTTPExceptions to regular responses
-        return Response(e.detail, e.status_code)
+        return JSONResponse(content={"error": e.detail}, status_code=e.status_code)
 
     return await call_next(request)
