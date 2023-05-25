@@ -3,7 +3,7 @@ from fastapi.requests import Request
 from fastapi.routing import APIRouter
 from tortoise.contrib.fastapi import HTTPNotFoundError
 
-from postgres.models import Post, PostPydantic, PostPydanticInput
+from postgres.models import Post, PostPydantic, PostPydanticInput, User
 
 router = APIRouter(
     prefix="/posts"
@@ -29,8 +29,9 @@ async def get_post(post_id: int) -> PostPydantic:
     return await PostPydantic.from_queryset_single(Post.get(id=post_id))
 
 @router.post("/", response_model=PostPydantic, responses={404: {"model": HTTPNotFoundError}})
-async def create_post(post: PostPydanticInput):
+async def create_post(request: Request, post: PostPydanticInput):
     post_obj = await Post.create(**post.dict(exclude_unset=True))
+    post_obj.user = User.get(request.state.user_id)
     return await PostPydantic.from_tortoise_orm(post_obj)
 
 
