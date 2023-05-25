@@ -7,26 +7,27 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import Response
 from fastapi.requests import Request
+from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from tortoise.contrib.fastapi import HTTPNotFoundError, register_tortoise
 
-from app.constants import ConnectionUrls, DiscordCredentials
 from app.routers import auth, posts
+from app.middleware import jwt_auth
 from postgres.config import TORTOISE_ORM
 
 load_dotenv()
 
 SIZE_POOL_AIOHTTP = 100
 
-app = FastAPI()
+installed_middleware = [Middleware(BaseHTTPMiddleware, dispatch=jwt_auth)]
 
-app.include_router(
-    auth.router,
-    prefix="/api"
+app = FastAPI(
+    middleware=installed_middleware
 )
-app.include_router(
-    posts.router,
-    prefix="/api"
-)
+
+
+app.include_router(auth.router, prefix="/api")
+app.include_router(posts.router, prefix="/api")
 
 
 @app.on_event("startup")
