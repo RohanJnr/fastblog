@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "fastblog backend"
+version = "0.1.0"
+description = "A blog built using fastapi and nextjs"
+authors = ["RohanJnr <rohanjnr44@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.95.2"
+uvicorn = {extras = ["standard"], version = "^0.22.0"}
+python-dotenv = "^1.0.0"
+aiohttp = {extras = ["speedups"], version = "^3.8.4"}
+tortoise-orm = {extras = ["asyncpg"], version = "^0.19.3"}
+loguru = "^0.7.0"
+aerich = "^0.7.1"
+tortoise-cli = "^0.1.2"
+
+
+
+[tool.aerich]
+tortoise_orm = "postgres.config.TORTOISE_ORM"
+location = "./migrations"
+src_folder = "./."
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

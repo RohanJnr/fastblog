@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5000:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: fastblog
+      POSTGRES_PASSWORD: fastblog
+      POSTGRES_USER: fastblog
+
+
+volumes:
+  postgres_data:
