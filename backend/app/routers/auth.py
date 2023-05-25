@@ -1,5 +1,5 @@
 import secrets
-from datetime import datetime
+from datetime import datetime, timezone
 
 from httpx import AsyncClient
 from fastapi.responses import Response, RedirectResponse
@@ -9,7 +9,7 @@ from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer
 
 from app.constants import Auth, Discord
-from postgres.models import User
+from postgres.models import User, UserPydantic
 
 
 router = APIRouter(
@@ -57,9 +57,10 @@ async def discord_redirect(code: str):
         user = await User.get_or_none(user_id=user_id)
         key_salt = secrets.token_urlsafe(16)
 
+        
         if user:
             user.key_salt = key_salt
-            user.save()
+            await user.save()
         else:
             # New user, persist to DB.
             user = User(
@@ -68,7 +69,7 @@ async def discord_redirect(code: str):
             )
             await user.save()
         
-        expires_at = datetime.now() + Auth.TOKEN_EXPIRES_IN_DAYS_TIMEDELTA
+        expires_at = datetime.now(timezone.utc) + Auth.TOKEN_EXPIRES_IN_DAYS_TIMEDELTA
 
         token = jwt.encode(
             {
@@ -79,14 +80,20 @@ async def discord_redirect(code: str):
             Auth.SECRET_KEY,
             Auth.ALGORITHM
         )
-
-    redirect = RedirectResponse("/")
+    print(token)
+    redirect = RedirectResponse("http://localhost:3000")
     redirect.set_cookie(
         key="token",
         value=token,
         expires=expires_at,
-        httponly=True
+        httponly=True,
+        
     )
 
     return redirect
 
+
+@router.get("/me")
+async def get_user(request: Request):
+    user_id = request.state.user_id
+    return await UserPydantic.from_queryset_single(User.get(user_id=user_id)) 
