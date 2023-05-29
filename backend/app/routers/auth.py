@@ -62,7 +62,6 @@ async def discord_redirect(code: str):
         user.raise_for_status()
         
         user_data = user.json()
-        print(user_data)
         user_id = user_data["id"]
         username = user_data["username"]
         avatar = user_data["avatar"]

@@ -11,6 +11,7 @@ from fastapi.requests import Request
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from tortoise.contrib.fastapi import HTTPNotFoundError, register_tortoise
+from tortoise import Tortoise
 
 from app.routers import auth, posts
 from app.middleware import jwt_auth
@@ -37,7 +38,7 @@ installed_middleware = [
 ]
 
 app = FastAPI(
-    middleware=installed_middleware
+    middleware=installed_middleware,
 )
 
 

@@ -1,8 +1,27 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import FeedRender from './render';
+
+interface User {
+    user_id: number,
+    username: string,
+    discriminator: number,
+    avatar: string
+}
+interface post {
+    user: User,
+    id: number,
+    title: string,
+    description: string,
+    created_at: string,
+    modified_at: string,
+    likes: User[] | null,
+    liked: boolean
+
+}
 
 
-async function getsda() {
+async function getData() {
     const cookieStore = cookies();
     const token = cookieStore.get('token');
 
@@ -12,7 +31,7 @@ async function getsda() {
             "Authorization": `Bearer ${token.value}`
         }
     })
-    if (res.status === 200){
+    if (res.status === 200) {
         return res.json()
     }
     else {
@@ -26,14 +45,27 @@ export default async function FeedPage() {
     // const token = cookieStore.get('token');
 
 
-    const data = await getsda()
+    const data: post[] = await getData()
+
+    const handleLike = async (id: number, index: number) => {
+        "use server"
+        const cookieStore = cookies();
+        const token = cookieStore.get('token');
+        const res = await fetch(`http://localhost:8000/api/posts/toggle_like/${id}`, {
+            headers: {
+                // @ts-ignore
+                "Authorization": `Bearer ${token.value}`
+            }
+        })
+        if (res.status === 200) {
+            return true
+        }
+        else {
+            return false
+        }
+    }
 
     return (
-        <div>
-            <h1>Feed Page</h1>
-            {data.map((item, index) => (
-                <h3 key={index} className="text-blue-500">{item.title}</h3>
-            ))}
-        </div>
+        <FeedRender data={data} handleLike={handleLike} />
     )
 }

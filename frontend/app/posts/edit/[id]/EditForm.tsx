@@ -1,19 +1,26 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { redirect } from 'next/navigation';
 
-export default function CreatePost() {
+export default function EditForm(params) {
 
-    const [title, settitle] = useState('');
-    const [description, setdescription] = useState('');
+    const post_id = params.post_id
+
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+
+    useEffect(()=> {
+        setTitle(params.title)
+        setDescription(params.description)
+    }, [])
 
     const handletitleChange = (event) => {
-        settitle(event.target.value);
+        setTitle(event.target.value);
     };
 
     const handledescriptionChange = (event) => {
-        setdescription(event.target.value);
+        setDescription(event.target.value);
     };
 
     const handleSubmit = async (event) => {
@@ -26,8 +33,8 @@ export default function CreatePost() {
             description
         }
 
-        fetch("http://localhost:8000/api/posts", {
-            method: "POST",
+        fetch(`http://localhost:8000/api/posts/${post_id}`, {
+            method: "PUT",
             headers: {
                 'Content-Type': 'application/json'
               },
@@ -36,19 +43,19 @@ export default function CreatePost() {
         }).then(response => {
             console.log(response.status)
             if (response.status === 200) {
-                alert("Created.")
+                alert("Updated.")
             } else {
                 alert("something went wrong")
             }
         }).catch(err => alert(err))
         // Reset form fields
-        settitle('');
-        setdescription('');
+        setTitle('');
+        setDescription('');
     };
 
     return (
         <form onSubmit={handleSubmit} className='flex flex-col justify-start gap-5'>
-            <h1>Add Form</h1>
+            <h1>Edit Form</h1>
                 <label htmlFor="title">title:</label>
                 <input className='p-2 rounded border-2' type="text" value={title} onChange={handletitleChange} />
                 <label htmlFor="description">description:</label>

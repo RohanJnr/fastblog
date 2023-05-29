@@ -14,6 +14,12 @@ class User(models.Model):
         super().__init__(*args, **kwargs)
         self._custom_generated_pk = True
 
+    def __str__(self):
+        return self.username
+    
+    def __repr__(self):
+        return self.username
+    
 
 UserPydantic = pydantic_model_creator(User, name="User")
 UserPydanticInput = pydantic_model_creator(User, name="UserIn", exclude_readonly=True)

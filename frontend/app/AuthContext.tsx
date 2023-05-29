@@ -1,5 +1,6 @@
 "use client"
 
+import { cookies } from 'next/headers';
 import { createContext, useState, ReactNode, useEffect } from 'react';
 
 export interface User {
@@ -7,6 +8,7 @@ export interface User {
   username: string;
   discriminator: number;
   avatar: string;
+  key_salt: string;
 }
 
 interface AuthContextProps {
@@ -22,14 +24,28 @@ export const AuthContext = createContext<AuthContextProps>({
 });
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
-  const raw_user = localStorage.getItem("user")
-  const [user, setUser] = useState<User | null>(
-    raw_user ? JSON.parse(raw_user) : null
-  );
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      console.log("fetching user.")
+      const response = await fetch("http://localhost:8000/api/auth/me", {credentials: "include"})
+      if (response.status === 200){
+        const data = await response.json();
+        setUser(data)
+      }
+      else{
+        console.log(response.status)
+      }
+    }
+    console.log("running hook.")
+    fetchUser()
+    
+  }, [])
 
   const login = (user: User) => {
     setUser(user);
-    localStorage.setItem('user', JSON.stringify(user));
+    // localStorage.setItem('user', JSON.stringify(user));
   };
 
   const logout = () => {

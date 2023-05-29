@@ -7,8 +7,6 @@ import { redirect } from 'next/navigation';
 
 export default function Navbar() {
     const { user, logout } = useContext(AuthContext)
-    console.log("nav log")
-    console.log(user)
     const [isActive, setIsActive] = useState(false);
     const toggleNav = (event: React.MouseEvent<HTMLButtonElement>) => {
         setIsActive(current => !current);

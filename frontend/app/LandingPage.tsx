@@ -2,27 +2,14 @@
 import { useContext } from "react"
 import { AuthContext } from "./AuthContext"
 
-import { User } from "./AuthContext"
 
-export default function LandingPage({data}: {data:User}) {
-    console.log("DATA IS HERE")
-    console.log(data)
+export default function LandingPage() {
     const { user, login } = useContext(AuthContext)
-
-    if (data) {
-
-        if (data.error){
-            console.log("Invalid Token")
-        }
-        else {
-            login(data)
-        }
-    }
 
     return (
         <div className="flex flex-col justify-start items-center h-[100vh] my-[10%]">
             {user ?(
-                <h1>Welcome {`${data.username}#${data.discriminator}`}</h1>
+                <h1>Welcome {`${user.username}#${user.discriminator}`}</h1>
             ):(
                 <div>
 

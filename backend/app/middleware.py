@@ -16,7 +16,7 @@ async def jwt_auth(
     """
     Check for JWT Authentication.
     """
-    print(request.url.path)
+    # print(request.url.path)
     if (
         request.url.path in ["/api/auth/discord/authorize", "/api/auth/discord/redirect", "/api/auth/discord/logout"]
         or request.url.path.startswith("/static/")
@@ -26,13 +26,13 @@ async def jwt_auth(
     try:
         # Populate the user data in the request
         auth_header = request.headers.get("Authorization")
-        print(auth_header)
+        # print(auth_header)
         if auth_header is not None:
             _, token = auth_header.split(" ")
         else:
             token = request.cookies.get("token")
 
-        print(f"GOT TOKEN: {token}")
+        # print(f"GOT TOKEN: {token}")
 
         if token is None:
             raise HTTPException(status_code=403, detail="No token provided. Please login first!")
@@ -46,12 +46,12 @@ async def jwt_auth(
         user_id = token_data["user_id"]
         user: User | None = await User.get_or_none(user_id=user_id)
 
-        print(user_id)
-        print(user)
+        # print(user_id)
+        # print(user)
 
         if user is None:
             raise HTTPException(status_code=403, detail="User does not exist, authorize!")
-        print(user.key_salt, token_data["key_salt"])
+        # print(user.key_salt, token_data["key_salt"])
         if user.key_salt != token_data["key_salt"]:
             raise HTTPException(status_code=403, detail="Invalid Token, Re-login and try again!")
         

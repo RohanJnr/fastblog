@@ -17,6 +17,11 @@ class Post(models.Model):
 
     likes: fields.ManyToManyRelation["User"] = fields.ManyToManyField("models.User", related_name="likes", through="post_likes", on_delete=fields.CASCADE)
 
+    def __repr__(self):
+        return f"{self.id}-{self.title}-{self.user_id}"
+    
+    def __str__(self):
+        return f"{self.id}-{self.title}-{self.user_id}"
 
-PostPydantic = pydantic_model_creator(Post, name="Post")
+PostPydantic = pydantic_model_creator(Post)
 PostPydanticInput = pydantic_model_creator(Post, name="PostIn", exclude_readonly=True)

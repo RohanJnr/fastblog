@@ -18,13 +18,13 @@ async function getData() {
 
 export default async function UserPosts() {
     const data = await getData()
-
     return (
         <div>
             <h1>Your posts</h1>
             {data.map((item, index) => (
                 <div className='my-20'>
                     <a href={`feed/${item.id}`} key={index} className="text-blue-500 text-lg underline">{item.title}</a>
+                    <a href={`posts/edit/${item.id}`}>Edit Post</a>
                 </div>
             ))}
         </div>
