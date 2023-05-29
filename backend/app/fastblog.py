@@ -71,5 +71,7 @@ register_tortoise(
 
 
 def start_server():
-    uvicorn.run("app.fastblog:app", reload=True)
+    import os
+    print(os.getenv("DATABASE_URL"))
+    uvicorn.run("app.fastblog:app", reload=True, host="0.0.0.0")
 

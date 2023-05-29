@@ -2,24 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import FeedRender from './render';
 
-interface User {
-    user_id: number,
-    username: string,
-    discriminator: number,
-    avatar: string
-}
-interface post {
-    user: User,
-    id: number,
-    title: string,
-    description: string,
-    created_at: string,
-    modified_at: string,
-    likes: User[] | null,
-    liked: boolean
-
-}
-
+import { Post } from '@/types';
 
 async function getData() {
     const cookieStore = cookies();
@@ -45,7 +28,7 @@ export default async function FeedPage() {
     // const token = cookieStore.get('token');
 
 
-    const data: post[] = await getData()
+    const data: Post[] = await getData()
 
     const handleLike = async (id: number, index: number) => {
         "use server"

@@ -16,7 +16,7 @@ async function getData(post_id: number) {
 
 }
 
-export default async function UserPosts({params}) {
+export default async function UserPosts({params}: {params: {id: number}}) {
     const post_id = params.id
     const data = await getData(post_id)
 

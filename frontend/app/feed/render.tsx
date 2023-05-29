@@ -1,12 +1,15 @@
 "use client"
 
+import { User, Post } from '@/types';
 import { useState, useEffect } from "react"
 
-export default function FeedRender(params) {
-    console.log("HERE IS DATA")
-    console.log(params.data)
-    const [data, setData] = useState([])
-    console.log("AFTER SET DATA")
+interface params {
+    data: Post[],
+    handleLike: (id: number, index: number) => Promise<boolean>
+}
+
+export default function FeedRender(params: params) {
+    const [data, setData] = useState<Post[]>([])
 
     useEffect(() => {
         setData(params.data)

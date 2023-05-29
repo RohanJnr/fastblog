@@ -18,7 +18,7 @@ async def jwt_auth(
     """
     # print(request.url.path)
     if (
-        request.url.path in ["/api/auth/discord/authorize", "/api/auth/discord/redirect", "/api/auth/discord/logout"]
+        request.url.path in ["/api/auth/discord/authorize", "/api/auth/discord/redirect", "/api/auth/discord/logout", "/"]
         or request.url.path.startswith("/static/")
     ):
         # Short circuit the authorization route

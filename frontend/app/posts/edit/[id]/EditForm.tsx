@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { redirect } from 'next/navigation';
 
-export default function EditForm(params) {
+export default function EditForm(params: {post_id: number, title: string, description: string}) {
 
     const post_id = params.post_id
 
@@ -15,15 +14,17 @@ export default function EditForm(params) {
         setDescription(params.description)
     }, [])
 
-    const handletitleChange = (event) => {
-        setTitle(event.target.value);
+    const handletitleChange = (event: Event) => {
+        if (!event.target) return
+        setTitle((event.target as HTMLInputElement).value);
     };
 
-    const handledescriptionChange = (event) => {
-        setDescription(event.target.value);
+    const handledescriptionChange = (event: Event) => {
+        if (!event.target) return
+        setDescription((event.target as HTMLInputElement).value);
     };
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: Event) => {
         event.preventDefault();
         // Perform form submission logic here
         console.log('title:', title);
@@ -54,11 +55,14 @@ export default function EditForm(params) {
     };
 
     return (
+        // @ts-ignore
         <form onSubmit={handleSubmit} className='flex flex-col justify-start gap-5'>
             <h1>Edit Form</h1>
                 <label htmlFor="title">title:</label>
+                {/* @ts-ignore */}
                 <input className='p-2 rounded border-2' type="text" value={title} onChange={handletitleChange} />
                 <label htmlFor="description">description:</label>
+                {/* @ts-ignore */}
                 <textarea className='p-2 rounded border-2' value={description} onChange={handledescriptionChange} />
             <button className='py-2 px-4 bg-black text-white rounded' type="submit">Submit</button>
         </form>

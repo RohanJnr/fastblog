@@ -10,6 +10,36 @@ services:
       POSTGRES_PASSWORD: fastblog
       POSTGRES_USER: fastblog
 
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: python -m app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    tty: true
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+    environment:
+      - DATABASE_URL=postgres://fastblog:fastblog@postgres:5432/fastblog
+  
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: frontend/Dockerfile
+  #   command: npm run dev
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - postgres
+  #     - backend
+  #   tty: true
+  #   volumes:
+  #     - .:/app
 
 volumes:
   postgres_data:
