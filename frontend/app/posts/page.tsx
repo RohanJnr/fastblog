@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { Post } from '@/types';
+import PostsComponent from './posts';
 
 async function getData() {
     const cookieStore = cookies();
@@ -17,15 +18,30 @@ async function getData() {
 
 export default async function UserPosts() {
     const data: Post[] = await getData()
+
+    const handleDelete = async (id: number) => {
+        "use server";
+        const cookieStore = cookies();
+        const token = cookieStore.get('token');
+
+        const response = await fetch(`http://localhost:8000/api/posts/${id}`, {
+            method: "DELETE",
+            headers: {
+                // @ts-ignore
+                "Authorization": `Bearer ${token.value}`
+            }
+        })
+
+        if (response.status === 200) {
+            return true
+        }
+        else {
+            return false
+        }
+
+    }
+
     return (
-        <div>
-            <h1>Your posts</h1>
-            {data.map((item, index) => (
-                <div key={index} className='my-20'>
-                    <a href={`feed/${item.id}`} key={index} className="text-blue-500 text-lg underline">{item.title}</a>
-                    <a href={`posts/edit/${item.id}`}>Edit Post</a>
-                </div>
-            ))}
-        </div>
+        <PostsComponent data={data} handleDelete={handleDelete} />
     )
 }
